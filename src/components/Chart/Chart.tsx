@@ -1,19 +1,52 @@
 import React, {useState, useEffect } from 'react'
 import { fetchDailyData } from '../../api'
 import { Line, Bar } from 'react-chartjs-2'
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement } from 'chart.js';
 
 import styles from './Chart.module.css';
-
-ChartJS.register(
+import {
+    Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    BarElement,
     PointElement,
-    LineElement
-)
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    ChartOptions,
+    BarElement
+  } from 'chart.js';
 
-const Chart = ({ data: {confirmed, deaths, recovered }, country }) => {
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    BarElement
+  );
+
+type ChartProps = {
+    data: {
+        confirmed: {
+            value: number,
+            detail: string
+        }
+        recovered: {
+            value: number,
+            detail: string
+        }
+        deaths: {
+            value: number,
+            detail: string
+        }
+        lastUpdate: Date
+    },
+    country : string
+}
+
+const Chart = ({ data: {confirmed, deaths, recovered }, country }: ChartProps) => {
     const [dailyData, setDailyData] = useState([]);
 
     useEffect(() => {
@@ -46,6 +79,13 @@ const Chart = ({ data: {confirmed, deaths, recovered }, country }) => {
         />) : null
     )
 
+    const options: ChartOptions = {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            title: { display: true, text: `Current state in ${country}`}
+        }
+    }
     const barChart = (
         confirmed
             ? (
@@ -60,10 +100,7 @@ const Chart = ({ data: {confirmed, deaths, recovered }, country }) => {
                             data:[confirmed.value, recovered.value, deaths.value]
                         }],
                     }}
-                    options={{
-                        legend: { display: false },
-                        title: { display: true, text: `Current state in ${country}`}
-                    }}
+                    options={ options }
                 />
             ) : null
     )

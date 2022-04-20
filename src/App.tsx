@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 
 import { Cards, Chart, CountryPicker } from './components';
 import styles from './App.module.css'
@@ -6,20 +6,52 @@ import { fetchData } from './api'
 
 import coronaImage from './images/image.png'
 
-class App extends React.Component {
+interface IState {
+  data: {
+    confirmed: {
+      value: number,
+      detail: string
+    }
+    recovered: {
+        value: number,
+        detail: string
+    }
+    deaths: {
+        value: number,
+        detail: string
+    }
+    lastUpdate: Date
+  } | undefined,
+  country: string,
+}
+
+class App extends Component<{}, IState> {
 
   state = {
-    data: {},
+    data: {
+      confirmed: {
+        value: 0,
+        detail: ''
+      },
+      recovered: {
+        value: 0,
+        detail: ''
+      },
+      deaths: {
+        value: 0,
+        detail: ''
+      },
+      lastUpdate: new Date()
+    },
     country: '',
   }
 
   async componentDidMount() {
-    const fetchedData = await fetchData()
-
+    const fetchedData = await fetchData(this.state.country)
     this.setState({ data: fetchedData })
   }
 
-  handleCountryChange = async (country) => {
+  handleCountryChange = async (country: string) => {
     const fetchedData = await fetchData(country);
 
     this.setState({ data: fetchedData, country: country });
